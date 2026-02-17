@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+/* Custom styles can be added below this line */
+
+#headingTextColor{
+    color: #211f37; 
+    font-weight: 700;
+
+}
+
+/* .collapse {
+    display: none!important;
+}
+
+.collapse.show {
+    display: block!important;
+} */
+.accordion-collapse.collapse {
+  visibility: visible !important;
+}
