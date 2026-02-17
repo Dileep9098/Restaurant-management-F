@@ -15,7 +15,7 @@ import CreateUser from './Componants/Admin/UserManagement/CreateUser'
 import { fetchSidebar } from './Store/feature/sidebar/sidebarSlice'
 import Restaurent from './Pages/SuperAdmin/Restaurent/Restaurent'
 import CreateRestaurentUser from './Pages/SuperAdmin/RestaurentUser/CreateRestaurentUser'
-import CreateRole from './Pages/Admin/Usermanagement/createRole'
+// import CreateRole from './Pages/Admin/Usermanagement/CreateRole'
 import CreateCategory from './Pages/Admin/Category/CreateCategory'
 import Item from './Pages/Admin/MenuItem/Item'
 import Tax from './Pages/Admin/Tax/Tax'
@@ -31,6 +31,7 @@ import Cart from './Pages/Customer/Cart'
 import CustomerOrderHistory from './Pages/Customer/CustomerOrderHistory'
 import InvoiceFormateTemplate from './Pages/Admin/InvoiceFormateTemplate/InvoiceFormateTemplate'
 import KitchenDisplay from './Pages/Admin/KOT(kitchen_display)/KitchenDisplay'
+import CreateRole from './Pages/Admin/Usermanagement/CreateRole'
 export default function Routing() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
@@ -75,7 +76,7 @@ export default function Routing() {
             <Route path="role" element={<RoleManagement />} />
             <Route path="user" element={<CreateUser />} />
             <Route path="create-role" element={<CreateRole />} />
-            <Route path="categories" element={<CreateCategory />} />
+            {/* <Route path="categories" element={<CreateCategory />} /> */}
             <Route path="categories" element={<CreateCategory />} />
             <Route path="items" element={<Item />} />
             <Route path="restaurants" element={<Restaurent />} />
