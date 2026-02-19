@@ -32,6 +32,7 @@ import CustomerOrderHistory from './Pages/Customer/CustomerOrderHistory'
 import InvoiceFormateTemplate from './Pages/Admin/InvoiceFormateTemplate/InvoiceFormateTemplate'
 import KitchenDisplay from './Pages/Admin/KOT(kitchen_display)/KitchenDisplay'
 import CreateRole from './Pages/Admin/Usermanagement/CreateRole'
+import Inventory from './Pages/Admin/Inventory/Inventory'
 export default function Routing() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
@@ -88,6 +89,7 @@ export default function Routing() {
             <Route path="banner" element={<Banner />} />
             <Route path="bill_formate" element={<InvoiceFormateTemplate />} />
             <Route path="live_orders" element={<KitchenDisplay />} />
+            <Route path="inventory_reports" element={<Inventory />} />
             {/* <Route path="/users" element={<ProtectedRoute permission="users.view"><Creace/></ProtectedRoute>} /> */}
             {/* <Route path="/roles" element={<ProtectedRoute permission="roles.view"><Roles /></ProtectedRoute>} /> */}
           </Route>

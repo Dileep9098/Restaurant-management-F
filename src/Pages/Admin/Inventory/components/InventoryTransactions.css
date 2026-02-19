@@ -1,0 +1,129 @@
+/* ===== INVENTORY TRANSACTIONS COMPONENT STYLES ===== */
+.inventory-transactions {
+  width: 100%;
+}
+
+.transaction-filters {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-icon {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+.transactions-table-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.date-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.type-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.icon-in {
+  color: #10b981;
+}
+
+.icon-out {
+  color: #ef4444;
+}
+
+.icon-wastage {
+  color: #f59e0b;
+}
+
+.icon-adjustment {
+  color: #3b82f6;
+}
+
+.quantity {
+  font-weight: 600;
+}
+
+.quantity.positive {
+  color: #10b981;
+}
+
+.quantity.negative {
+  color: #ef4444;
+}
+
+.reference {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.no-reference {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .transaction-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .transactions-table-container {
+    padding: 15px;
+  }
+  
+  .type-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .quantity {
+    font-size: 0.85rem;
+  }
+}

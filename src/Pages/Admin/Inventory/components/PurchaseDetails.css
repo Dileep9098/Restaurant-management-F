@@ -1,0 +1,175 @@
+/* Purchase Details Modal Styles */
+.purchase-details-modal {
+  max-width: 800px;
+  width: 90%;
+}
+
+.purchase-details {
+  padding: 20px;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+}
+
+.detail-section h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  font-weight: 600;
+  color: #34495e;
+  min-width: 140px;
+}
+
+.detail-row .value {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.items-table {
+  margin-top: 10px;
+}
+
+.items-table table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.items-table th {
+  background-color: #3498db;
+  color: white;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.items-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.items-table tr:last-child td {
+  border-bottom: none;
+}
+
+.items-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.items-table tr:hover {
+  background-color: #e8f4f8;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.summary-row.total {
+  border-top: 2px solid #3498db;
+  margin-top: 10px;
+  padding-top: 15px;
+}
+
+.summary-row .label {
+  font-weight: 600;
+  color: #34495e;
+}
+
+.summary-row .value {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.summary-row.total .value.total-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #ecf0f1;
+  text-align: right;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-footer .btn-secondary:hover {
+  background-color: #7f8c8d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .purchase-details-modal {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .detail-row .label {
+    min-width: auto;
+  }
+  
+  .items-table {
+    overflow-x: auto;
+  }
+  
+  .items-table table {
+    min-width: 500px;
+  }
+}
