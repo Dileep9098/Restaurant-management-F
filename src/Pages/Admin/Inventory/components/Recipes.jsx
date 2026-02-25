@@ -143,9 +143,13 @@ const Recipes = () => {
     <div className="recipes">
       <div className="section-header">
         <h2>Recipes</h2>
-        <button className="btn-primary" onClick={() => setShowModal(true)}>
-          <FaPlus /> Add Recipe
-        </button>
+        <a href="#" className="btn btn-primary" data-bs-toggle="modal"
+           id="create-btn"
+           data-bs-target="#permissionModal"
+           onClick={() => document.body.classList.remove('pace-done', 'modal-open')}>
+          <i className="feather-plus me-2" />
+          <span>Add Recipe</span>
+        </a>
       </div>
 
       <div className="search-bar">
@@ -211,92 +215,126 @@ const Recipes = () => {
       )}
 
       {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>{editingRecipe ? 'Edit Recipe' : 'Add Recipe'}</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>×</button>
-            </div>
-            
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Menu Item*</label>
-                <select
-                  value={formData.menuItem}
-                  onChange={(e) => setFormData({...formData, menuItem: e.target.value})}
-                  required
-                >
-                  <option value="">Select Menu Item</option>
-                  {menuItems.map(item => (
-                    <option key={item._id} value={item._id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="recipe-ingredients">
-                <div className="ingredients-header">
-                  <h4>Ingredients</h4>
-                  <button type="button" className="btn-secondary" onClick={handleAddIngredient}>
-                    <FaPlus /> Add Ingredient
-                  </button>
+        <div className="modal fade" id="permissionModal" tabIndex={-1} aria-hidden="true" style={{display: 'block', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+          <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content border-0 rounded-4 overflow-hidden">
+              <div className="modal-header px-4 py-3 bg-dark text-white">
+                <div>
+                  <h4 className="mb-0 fw-semibold text-white">
+                    {editingRecipe ? 'Edit Recipe' : 'Add Recipe'}
+                  </h4>
+                  <small className="text-white-50">
+                    Manage recipe ingredients and quantities
+                  </small>
                 </div>
-                
-                {formData.ingredients.map((ingredient, index) => (
-                  <div key={index} className="ingredient-row">
-                    <div className="ingredient-inputs">
-                      <div className="form-group">
-                        <label>Raw Material*</label>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setShowModal(false)}
+                />
+              </div>
+              
+              <div className="modal-body p-4 bg-body-tertiary">
+                <div className="card border-0 shadow-sm rounded-4 mb-4">
+                  <div className="card-body">
+                    <h6 className="fw-semibold mb-3 text-primary">
+                      Recipe Details
+                    </h6>
+                    
+                    <div className="row g-3">
+                      <div className="col-md-12">
+                        <label className="form-label">Menu Item*</label>
                         <select
-                          value={ingredient.rawMaterial}
-                          onChange={(e) => handleIngredientChange(index, 'rawMaterial', e.target.value)}
+                          className="form-select form-select-lg"
+                          value={formData.menuItem}
+                          onChange={(e) => setFormData({...formData, menuItem: e.target.value})}
                           required
                         >
-                          <option value="">Select Material</option>
-                          {rawMaterials.map(material => (
-                            <option key={material._id} value={material._id}>
-                              {material.name} ({material.unit})
+                          <option value="">Select Menu Item</option>
+                          {menuItems.map(item => (
+                            <option key={item._id} value={item._id}>
+                              {item.name}
                             </option>
                           ))}
                         </select>
                       </div>
-                      
-                      <div className="form-group">
-                        <label>Quantity Required*</label>
-                        <input
-                          type="number"
-                          value={ingredient.quantityRequired}
-                          onChange={(e) => handleIngredientChange(index, 'quantityRequired', Number(e.target.value))}
-                          min="0.01"
-                          step="0.01"
-                          required
-                        />
-                      </div>
                     </div>
-                    
-                    {formData.ingredients.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn-danger remove-ingredient-btn"
-                        onClick={() => handleRemoveIngredient(index)}
-                      >
-                        ×
-                      </button>
-                    )}
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>
+                <div className="card border-0 shadow-sm rounded-4 mb-4">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h6 className="fw-semibold mb-0 text-primary">
+                        Recipe Ingredients
+                      </h6>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={handleAddIngredient}>
+                        <FaPlus className="me-1" /> Add Ingredient
+                      </button>
+                    </div>
+
+                    <div className="recipe-ingredients">
+                      {formData.ingredients.map((ingredient, index) => (
+                        <div key={index} className="card mb-3">
+                          <div className="card-body">
+                            <div className="row g-3">
+                              <div className="col-md-6">
+                                <label className="form-label">Raw Material*</label>
+                                <select
+                                  className="form-select"
+                                  value={ingredient.rawMaterial}
+                                  onChange={(e) => handleIngredientChange(index, 'rawMaterial', e.target.value)}
+                                  required
+                                >
+                                  <option value="">Select Material</option>
+                                  {rawMaterials.map(material => (
+                                    <option key={material._id} value={material._id}>
+                                      {material.name} ({material.unit})
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              
+                              <div className="col-md-6">
+                                <label className="form-label">Quantity Required*</label>
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  value={ingredient.quantityRequired}
+                                  onChange={(e) => handleIngredientChange(index, 'quantityRequired', Number(e.target.value))}
+                                  min="0.01"
+                                  step="0.01"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            
+                            {formData.ingredients.length > 1 && (
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleRemoveIngredient(index)}
+                              >
+                                <FaTimes />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="modal-footer bg-white px-4 py-3">
+                <button className="btn btn-light rounded-3" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button className="btn btn-dark rounded-3 px-4" onClick={handleSubmit}>
                   {editingRecipe ? 'Update' : 'Add'} Recipe
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

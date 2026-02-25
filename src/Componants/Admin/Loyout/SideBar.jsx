@@ -253,6 +253,7 @@ const superAdminMenu = [
 ];
 
 export default function SideBar({ user }) {
+
   const sidebar = useSelector(state => state.sidebar.list);
   const menuToRender = user?.role?.name === "Super Admin" ? superAdminMenu : sidebar;
   const [openMenus, setOpenMenus] = useState({});
@@ -264,25 +265,49 @@ export default function SideBar({ user }) {
     return 0;
   });
 
-  console.log("Sidebar me kya kya hai bhai mere",sidebar)
+  console.log("Sidebar me kya kya hai bhai mere", sidebar)
 
   return (
     <>
       <nav className="nxl-navigation">
         <div className="navbar-wrapper">
           <div className="m-header">
-            <a href="index.html" className="b-brand">
+            <a href="/dashboard" className="b-brand d-flex align-items-center gap-2">
+
+              {/* Large Logo + Name */}
+              <div className="d-flex align-items-center gap-2">
+                <img
+                  src={
+                    user?.restaurant?.logo
+                      ? `/assets/images/categories/${user.restaurant.logo}`
+                      : "/assets/images/logo/mobi.png"
+                  }
+                  alt={user?.restaurant?.name || "Restaurant Logo"}
+                  className="logo logo-lg"
+                  onError={(e) => {
+                    e.target.src = "/assets/images/logo/mobi.png";
+                  }}
+                />
+                <h5 className="mb-0 fw-semibold">
+                  {user?.restaurant?.name || "My Restaurant"}
+                </h5>
+              </div>
+
+              {/* Small Logo */}
               <img
-                src="assets/images/logo-full.png"
-                alt=""
-                className="logo logo-lg"
-              />
-              <img
-                src="assets/images/logo-abbr.png"
-                alt=""
+                src={
+                  user?.restaurant?.logo
+                    ? `/assets/images/categories/${user.restaurant.logo}`
+                    : "/assets/images/default-logo.png"
+                }
+                alt="Small Logo"
                 className="logo logo-sm"
+                onError={(e) => {
+                  e.target.src = "/assets/images/default-logo.png";
+                }}
               />
             </a>
+
           </div>
           <div className="navbar-content">
             <ul className="nxl-navbar">
@@ -294,7 +319,7 @@ export default function SideBar({ user }) {
                 if (hasSub) {
                   return (
                     <li className="nxl-item nxl-hasmenu" key={menu._id}>
-                      <a href="#" className="nxl-link" onClick={(e) => {   e.preventDefault();   setOpenMenus(prev => ({...prev, [menu._id]: !prev[menu._id]   })); }}>
+                      <a href="#" className="nxl-link" onClick={(e) => { e.preventDefault(); setOpenMenus(prev => ({ ...prev, [menu._id]: !prev[menu._id] })); }}>
 
                         <span className="nxl-micon">
                           <i className={menu.icon} />

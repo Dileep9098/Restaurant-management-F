@@ -2149,7 +2149,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import VariantDrawer from "../../Componants/Items/VariantModel";
 import Config from "../../Config/Config";
-import "./customerMenu.css";
 import useDebounce from "../../hooks/useDebounce";
 import SearchBar from "../../Componants/Items/SearchBar";
 import { Link } from "react-router-dom";
@@ -2160,6 +2159,7 @@ import { addToCart } from "../../Store/feature/Items/cartSlice";
 import { setMenu, appendMenuItems, clearMenu, appendVariantGroups, appendVariants } from "../../Store/feature/Items/menuSlice";
 import { setContext } from "../../Store/feature/context/contextSlice";
 import { useRef } from "react";
+import "./customerMenu.css";
 
 export default function CustomerMenu() {
   const [allBanners, setAllBanners] = useState([]);

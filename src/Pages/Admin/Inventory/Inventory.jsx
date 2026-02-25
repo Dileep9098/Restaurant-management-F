@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { FaBox, FaChartLine, FaShoppingCart, FaUtensils, FaUsers, FaTruck, FaLink, FaCog, FaExchangeAlt } from 'react-icons/fa';
-import RawMaterials from './components/RawMaterials';
+// import RawMaterials from './components/RawMaterials';
 import Categories from './components/Categories';
-import Purchases from './components/Purchases';
+// import Purchases from './components/Purchases';
 import Suppliers from './components/Suppliers';
 import Recipes from './components/Recipes';
-import StockReport from './components/StockReport';
-import SupplierItems from './components/SupplierItems';
+// import StockReport from './components/StockReport';
+// import SupplierItems from './components/SupplierItems';
 import InventorySettings from './components/InventorySettings';
 import InventoryTransactions from './components/InventoryTransactions';
 import './Inventory.css';
-
+import RawMaterials from './components/RawMaterials_Updated';
+import SupplierItems from './components/SupplierItems_Updated';
+import Purchases from './components/Purchases_temp';
+import StockReport from './components/StockReport_Updated';
 const Inventory = () => {
   const [activeTab, setActiveTab] = useState('raw-materials');
   const [stats, setStats] = useState({
@@ -120,7 +123,7 @@ const Inventory = () => {
         </div>
       </div>
 
-      <div className="inventory-content">
+      <div className={`inventory-content ${activeTab === 'transactions' || activeTab === 'stock-report' ? 'top-sidebar' : ''}`}>
         <div className="inventory-sidebar">
           <div className="tab-navigation">
             {tabs.map(tab => {

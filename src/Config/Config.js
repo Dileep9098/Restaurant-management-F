@@ -189,61 +189,68 @@ const Config = {
 
         // Invoice Template Formate
 
-        GET_ALL_INVOICE_TEMPLATES:"/api/v1/get-all-invoice-template",
-        CREATE_INVOICE_TEMPLATE:"/api/v1/create-invoice-template",
-        UPDATE_INVOICE_TEMPLATE:"/api/v1/update-invoice-template",
-        DELETE_INVOICE_TEMPLATE:"/api/v1/delete-invoice-template",
-        SET_RESTAURANT_INVOICE_TEMPLATE:"/api/v1/set-restaurant-invoice-template",
+        GET_ALL_INVOICE_TEMPLATES: "/api/v1/get-all-invoice-template",
+        CREATE_INVOICE_TEMPLATE: "/api/v1/create-invoice-template",
+        UPDATE_INVOICE_TEMPLATE: "/api/v1/update-invoice-template",
+        DELETE_INVOICE_TEMPLATE: "/api/v1/delete-invoice-template",
+        SET_RESTAURANT_INVOICE_TEMPLATE: "/api/v1/set-restaurant-invoice-template",
 
 
 
         // Inventory Data
-        
-        CREATE_ROW_MATERIAL_CATEGORY:'/api/v1/create-row-material-category',
-        GET_ALL_ROW_MATERIAL_CATEGORY:'/api/v1/get-all-row-material-category',
-        GET_SINGLE_ROW_MATERIAL_CATEGORY:'/api/v1/get-row-material-category',
-        UPDATE_ROW_MATERIAL_CATEGORY:'/api/v1/update-row-material-category',
-        DELETE_ROW_MATERIAL_CATEGORY:'/api/v1/delete-row-material-category',
 
-        CREATE_ROW_MATERIAL:'/api/v1/create-row-material',
-        GET_ALL_ROW_MATERIAL:'/api/v1/get-all-row-material',
-        GET_SINGLE_ROW_MATERIAL:'/api/v1/get-row-material',
-        UPDATE_ROW_MATERIAL:'/api/v1/update-row-material',
-        DELETE_ROW_MATERIAL:'/api/v1/delete-row-material',
-        GET_LOW_STOCK_MATERIAL:'/api/v1/low-stock',
+        CREATE_ROW_MATERIAL_CATEGORY: '/api/v1/create-row-material-category',
+        GET_ALL_ROW_MATERIAL_CATEGORY: '/api/v1/get-all-row-material-category',
+        GET_SINGLE_ROW_MATERIAL_CATEGORY: '/api/v1/get-row-material-category',
+        UPDATE_ROW_MATERIAL_CATEGORY: '/api/v1/update-row-material-category',
+        DELETE_ROW_MATERIAL_CATEGORY: '/api/v1/delete-row-material-category',
 
-        CREATE_SUPPLIER:'/api/v1/create-supplier',
-        GET_ALL_SUPPLIER:'/api/v1/get-all-supplier',
-        GET_SINGLE_SUPPLIER:'/api/v1/get-supplier',
-        UPDATE_SUPPLIER:'/api/v1/update-supplier',
-        DELETE_SUPPLIER:'/api/v1/delete-supplier',
+        CREATE_ROW_MATERIAL: '/api/v1/create-row-material',
+        GET_ALL_ROW_MATERIAL: '/api/v1/get-all-row-material',
+        GET_SINGLE_ROW_MATERIAL: '/api/v1/get-row-material',
+        UPDATE_ROW_MATERIAL: '/api/v1/update-row-material',
+        DELETE_ROW_MATERIAL: '/api/v1/delete-row-material',
+        GET_LOW_STOCK_MATERIAL: '/api/v1/low-stock',
 
-        CREATE_SUPPLIER_ITEM:'/api/v1/create-supplier-item',
-        GET_ALL_SUPPLIER_ITEMS:'/api/v1/get-all-supplier-items',
-        GET_SINGLE_SUPPLIER_ITEM:'/api/v1/get-supplier-item',
+        CREATE_SUPPLIER: '/api/v1/create-supplier',
+        GET_ALL_SUPPLIER: '/api/v1/get-all-supplier',
+        GET_SINGLE_SUPPLIER: '/api/v1/get-supplier',
+        UPDATE_SUPPLIER: '/api/v1/update-supplier',
+        DELETE_SUPPLIER: '/api/v1/delete-supplier',
 
-            CREATE_PURCHASE:'/api/v1/create-purchases',
-            GET_ALL_PURCHASES:'/api/v1/get-all-purchases',
-            GET_SINGLE_PURCHASE:'/api/v1/get-single-purchases',
-            UPDATE_PURCHASE:'/api/v1/update-purchase',
-            DELETE_PURCHASE:'/api/v1/delete-purchase',
+        CREATE_SUPPLIER_ITEM: '/api/v1/create-supplier-item',
+        GET_ALL_SUPPLIER_ITEMS: '/api/v1/get-all-supplier-items',
+        GET_SINGLE_SUPPLIER_ITEM: '/api/v1/get-supplier-item',
+        UPDATE_SUPPLIER_ITEM: '/api/v1/update-supplier-item',
+        DELETE_SUPPLIER_ITEM: '/api/v1/delete-supplier-item',
+        GET_SUPPLIER_ITEM_BY_SUPPLIER: '/api/v1/get-supplier-item-by-supplier',
+        GET_SUPPLIERS_BY_RAW_MATERIAL: '/api/v1/get-supplier-by-row-material',
 
-            CREATE_RECIPE:'/api/v1/create-recipe',
-            GET_ALL_RECIPES:'/api/v1/get-all-recipes',
-            GET_SINGLE_RECIPE:'/api/v1/get-single-recipe',
-            UPDATE_RECIPE:'/api/v1/update-recipe',
-            DELETE_RECIPE:'/api/v1/delete-recipe',
-            DEDUCT_STOCK_FOR_MENU_ITEM:'/api/v1/deduct-stock-for-menu-item',
-        DEDUCT_STOCK_FOR_MENU_ITEM:'/api/v1/deduct-stock-for-menu-item',
+        CREATE_PURCHASE: '/api/v1/create-purchases',
+        GET_ALL_PURCHASES: '/api/v1/get-all-purchases',
+        GET_SINGLE_PURCHASE: '/api/v1/get-single-purchases',
+        UPDATE_PURCHASE: '/api/v1/update-purchase',
+        DELETE_PURCHASE: '/api/v1/delete-purchase',
+        MARK_PURCHASE_ORDERED: '/api/v1/ordered',
+        RECEIVE_PURCHASE: '/api/v1/receive',
 
-        CREATE_INVENTORY_TRANSACTION:'/api/v1/create-inventory-transaction',
-        GET_ALL_INVENTORY_TRANSACTIONS:'/api/v1/get-all-inventory-transactions',
-        GET_CURRENT_STOCK:'/api/v1/get-current-stock',
+        CREATE_RECIPE: '/api/v1/create-recipe',
+        GET_ALL_RECIPES: '/api/v1/get-all-recipes',
+        GET_SINGLE_RECIPE: '/api/v1/get-single-recipe',
+        UPDATE_RECIPE: '/api/v1/update-recipe',
+        DELETE_RECIPE: '/api/v1/delete-recipe',
 
-        CREATE_INVENTORY_SETTING:'/api/v1/create-inventory-setting',
-        GET_ALL_INVENTORY_SETTINGS:'/api/v1/get-all-inventory-settings',
-        UPDATE_INVENTORY_SETTING:'/api/v1/update-inventory-setting',
-        GET_STOCK_REPORT:'/api/v1/get-stock-report'
+        DEDUCT_STOCK_FOR_MENU_ITEM: '/api/v1/deduct-stock-for-menu-item',
+        DEDUCT_STOCK_FOR_MENU_ITEM: '/api/v1/deduct-stock-for-menu-item',
+
+        CREATE_INVENTORY_TRANSACTION: '/api/v1/create-inventory-transaction',
+        GET_ALL_INVENTORY_TRANSACTIONS: '/api/v1/get-all-inventory-transactions',
+        GET_CURRENT_STOCK: '/api/v1/get-current-stock',
+
+        CREATE_INVENTORY_SETTING: '/api/v1/create-inventory-setting',
+        GET_ALL_INVENTORY_SETTINGS: '/api/v1/get-all-inventory-settings',
+        UPDATE_INVENTORY_SETTING: '/api/v1/update-inventory-setting',
+        GET_STOCK_REPORT: '/api/v1/get-stock-report'
 
     },
 

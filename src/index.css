@@ -18,3 +18,9 @@
 .accordion-collapse.collapse {
   visibility: visible !important;
 }
+
+
+.b-brand img{
+    width: 42px;
+    height:42px; 
+}

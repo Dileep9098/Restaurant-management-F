@@ -22,20 +22,18 @@ const Purchases = ({ onStatsUpdate }) => {
     supplier: '',
     items: [],
     totalAmount: 0,
-    isActive: true,
-    status: 'draft',
-    paymentStatus: 'pending',
-    purchaseDate: '',
-    supplierInvoiceNumber: '',
-    dueDate: '',
-    orderedAt: '',
-    receivedAt: '',
-    paidAmount: 0,
-    balanceAmount: 0,
     subTotal: 0,
     totalTax: 0,
     totalDiscount: 0,
-    notes: ''
+    paidAmount: 0,
+    balanceAmount: 0,
+    purchaseDate: new Date().toISOString().split('T')[0],
+    supplierInvoiceNumber: '',
+    dueDate: '',
+    status: 'draft',
+    paymentStatus: 'pending',
+    notes: '',
+    isActive: true
   });
 
   useEffect(() => {
@@ -84,6 +82,8 @@ const Purchases = ({ onStatsUpdate }) => {
         rawMaterial: '',
         quantity: 1,
         pricePerUnit: 0,
+        taxPercent: 0,
+        discount: 0,
         total: 0
       }]
     });
@@ -95,65 +95,87 @@ const Purchases = ({ onStatsUpdate }) => {
       ...formData,
       items: newItems
     });
+    calculateTotals(newItems);
   };
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...formData.items];
     newItems[index][field] = value;
 
-    if (field === 'quantity' || field === 'pricePerUnit') {
-      newItems[index].total = newItems[index].quantity * newItems[index].pricePerUnit;
-    }
+    // Calculate item total
+    const item = newItems[index];
+    const itemTotal = item.quantity * item.pricePerUnit;
+    const taxAmount = itemTotal * (item.taxPercent || 0) / 100;
+    const discountAmount = itemTotal * (item.discount || 0) / 100;
+    item.total = itemTotal + taxAmount - discountAmount;
 
-    const totalAmount = newItems.reduce((sum, item) => sum + item.total, 0);
-    // compute breakdown
-    let subTotal = 0;
-    let totalTax = 0;
-    let totalDiscount = 0;
-    newItems.forEach(item => {
-      const line = item.quantity * item.pricePerUnit;
-      subTotal += line;
-      totalTax += line * ((item.taxPercent || 0) / 100);
-      totalDiscount += line * ((item.discount || 0) / 100);
-    });
-    setFormData({
-      ...formData,
-      items: newItems,
-      totalAmount,
+    calculateTotals(newItems);
+  };
+
+  const calculateTotals = (items) => {
+    const subTotal = items.reduce((sum, item) => {
+      const itemTotal = item.quantity * item.pricePerUnit;
+      return sum + itemTotal;
+    }, 0);
+
+    const totalTax = items.reduce((sum, item) => {
+      const itemTotal = item.quantity * item.pricePerUnit;
+      return sum + (itemTotal * (item.taxPercent || 0) / 100);
+    }, 0);
+
+    const totalDiscount = items.reduce((sum, item) => {
+      const itemTotal = item.quantity * item.pricePerUnit;
+      return sum + (itemTotal * (item.discount || 0) / 100);
+    }, 0);
+
+    const totalAmount = subTotal + totalTax - totalDiscount;
+    const balanceAmount = totalAmount - (formData.paidAmount || 0);
+
+    setFormData(prev => ({
+      ...prev,
+      items,
       subTotal,
       totalTax,
-      totalDiscount
-    });
+      totalDiscount,
+      totalAmount,
+      balanceAmount
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
     try {
-      // recalc totals before sending
-      const itemsCopy = formData.items.map(it => ({ ...it }));
-      let calcSub = 0, calcTax = 0, calcDisc = 0, calcTotal = 0;
-      itemsCopy.forEach(item => {
-        const line = item.quantity * item.pricePerUnit;
-        const tax = line * ((item.taxPercent || 0) / 100);
-        const disc = line * ((item.discount || 0) / 100);
-        const tot = line + tax - disc;
-        item.total = tot;
-        calcSub += line;
-        calcTax += tax;
-        calcDisc += disc;
-        calcTotal += tot;
-      });
-      const payload = {
-        ...formData,
-        items: itemsCopy,
-        subTotal: calcSub,
-        totalTax: calcTax,
-        totalDiscount: calcDisc,
-        totalAmount: calcTotal,
-        balanceAmount: calcTotal - (formData.paidAmount || 0)
-      };
-      const response = await axiosInstance.post(Config.END_POINT_LIST['CREATE_PURCHASE'], payload);
+      // Validate form data
+      if (!formData.supplier) {
+        alert('Please select a supplier');
+        return;
+      }
+
+      if (!formData.items || formData.items.length === 0) {
+        alert('Please add at least one item');
+        return;
+      }
+
+      // Validate each item
+      for (let i = 0; i < formData.items.length; i++) {
+        const item = formData.items[i];
+        if (!item.rawMaterial || item.rawMaterial === '') {
+          alert(`Please select raw material for item ${i + 1}`);
+          return;
+        }
+        if (!item.quantity || item.quantity <= 0) {
+          alert(`Please enter valid quantity for item ${i + 1}`);
+          return;
+        }
+        if (!item.pricePerUnit || item.pricePerUnit <= 0) {
+          alert(`Please enter valid price for item ${i + 1}`);
+          return;
+        }
+      }
+
+      const response = await axiosInstance.post(Config.END_POINT_LIST['CREATE_PURCHASE'], formData);
 
       if (response.data.success) {
         // Direct state update - add new purchase
@@ -165,29 +187,12 @@ const Purchases = ({ onStatsUpdate }) => {
         }]);
 
         setShowModal(false);
-        setFormData({
-          supplier: '',
-          items: [],
-          totalAmount: 0,
-          isActive: true,
-          status: 'draft',
-          paymentStatus: 'pending',
-          purchaseDate: '',
-          supplierInvoiceNumber: '',
-          dueDate: '',
-          orderedAt: '',
-          receivedAt: '',
-          paidAmount: 0,
-          balanceAmount: 0,
-          subTotal: 0,
-          totalTax: 0,
-          totalDiscount: 0,
-          notes: ''
-        });
+        resetForm();
         onStatsUpdate?.();
       }
     } catch (error) {
       console.error('Error saving purchase:', error);
+      alert(error?.response?.data?.message || 'Failed to create purchase');
     } finally {
       setSubmitting(false);
     }
@@ -195,7 +200,8 @@ const Purchases = ({ onStatsUpdate }) => {
 
   const filteredPurchases = purchases.filter(purchase =>
     purchase.supplier?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    purchase._id?.toLowerCase().includes(searchTerm.toLowerCase())
+    purchase._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    purchase.purchaseNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Pagination logic
@@ -235,51 +241,23 @@ const Purchases = ({ onStatsUpdate }) => {
       supplier: '',
       items: [],
       totalAmount: 0,
-      isActive: true,
-      status: 'draft',
-      paymentStatus: 'pending',
-      purchaseDate: '',
-      supplierInvoiceNumber: '',
-      dueDate: '',
-      orderedAt: '',
-      receivedAt: '',
-      paidAmount: 0,
-      balanceAmount: 0,
       subTotal: 0,
       totalTax: 0,
       totalDiscount: 0,
-      notes: ''
+      paidAmount: 0,
+      balanceAmount: 0,
+      purchaseDate: new Date().toISOString().split('T')[0],
+      supplierInvoiceNumber: '',
+      dueDate: '',
+      status: 'draft',
+      paymentStatus: 'pending',
+      notes: '',
+      isActive: true
     });
   };
 
   return (
     <div className="purchases">
-      <div className="section-header">
-        <h2>Purchases</h2>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
-        >
-          <FaPlus className="me-2" />
-          Add Purchase
-        </button>
-      </div>
-
-      <div className="search-bar">
-        {/* <FaSearch className="search-icon" /> */}
-        <input
-          type="text"
-          placeholder="Search purchases..."
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
       {loading ? (
         <div className="loading-state">Loading purchases...</div>
       ) : filteredPurchases.length === 0 ? (
@@ -289,61 +267,74 @@ const Purchases = ({ onStatsUpdate }) => {
           <p>Record your inventory purchases here</p>
         </div>
       ) : (
-        <div className="purchases-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Purchase ID</th>
-                <th>Date</th>
-                <th>Supplier</th>
-                <th>Items</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((purchase) => (
-                <tr key={purchase._id}>
-                  <td>{purchase._id}</td>
-                  <td>
-                    <div className="date-display">
-                      <FaCalendarAlt />
-                      {new Date(purchase.createdAt).toLocaleDateString("en-IN")}
-                    </div>
-                  </td>
+        <div className="purchases-wrapper">
+          <div className="purchases-header">
+            <div>
+              <h2>Purchases</h2>
+              <p className="subtitle">Track inventory procurement</p>
+            </div>
 
-                  <td>{purchase.supplier?.name || "Unknown Supplier"}</td>
+            <button
+              className="btn btn-primary add-btn"
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+            >
+              <FaPlus /> Add Purchase
+            </button>
+          </div>
 
-                  <td>{purchase.items?.length || 0} items</td>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search by supplier or number..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
-                  <td>
-                    <div className="amount-display">
-                      <FaRupeeSign />
-                      {Number(purchase.totalAmount || 0).toFixed(2)}
-                    </div>
-                  </td>
-
-                  <td>
-                    <span className={`status-badge ${purchase.isActive ? 'active' : 'inactive'}`}>
-                      {purchase.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-
-                  <td>
-                    <button
-                      className="btn-secondary"
-                      onClick={() => handleViewDetails(purchase)}
-                      title="View Purchase Details"
-                      disabled={submitting}
-                    >
-                      <FaEye />
-                    </button>
-                  </td>
+          <div className="table-card">
+            <table className="premium-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Purchase No</th>
+                  <th>Supplier</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentItems.map((purchase, index) => (
+                  <tr key={purchase._id}>
+                    <td>{index + 1}</td>
+                    <td>{new Date(purchase.createdAt).toLocaleDateString("en-IN")}</td>
+                    <td>{purchase.purchaseNumber}</td>
+                    <td>{purchase.supplier?.name}</td>
+                    <td>{purchase.items?.length}</td>
+                    <td>₹{purchase.totalAmount?.toFixed(2)}</td>
+                    <td>
+                      <span className={`status-pill ${purchase.paymentStatus}`}>
+                        {purchase.paymentStatus}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="view-btn"
+                        onClick={() => handleViewDetails(purchase)}
+                      >
+                        <FaEye />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -395,9 +386,64 @@ const Purchases = ({ onStatsUpdate }) => {
 
               <div className="modal-body p-4">
 
-                {/* Supplier Section */}
+                {/* Purchase Info Section */}
+                <div className="row mb-4">
+                  <div className="col-md-3">
+                    <label>Purchase Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={formData.purchaseDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, purchaseDate: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>Invoice Number</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.supplierInvoiceNumber}
+                      onChange={(e) =>
+                        setFormData({ ...formData, supplierInvoiceNumber: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>Due Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={formData.dueDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dueDate: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label>Status</label>
+                    <select
+                      className="form-select"
+                      value={formData.status}
+                      onChange={(e) =>
+                        setFormData({ ...formData, status: e.target.value })
+                      }
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="approved">Approved</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Supplier */}
                 <div className="mb-4">
-                  <label className="form-label">Supplier*</label>
+                  <label>Supplier*</label>
                   <select
                     className="form-select"
                     value={formData.supplier}
@@ -428,19 +474,13 @@ const Purchases = ({ onStatsUpdate }) => {
                   </button>
                 </div>
 
-                {formData.items.length === 0 && (
-                  <div className="text-muted text-center py-3">
-                    No items added yet
-                  </div>
-                )}
-
                 {formData.items.map((item, index) => (
-                  <div key={index} className="card mb-3">
+                  <div key={index} className="card mb-3 shadow-sm">
                     <div className="card-body">
                       <div className="row g-3">
 
-                        <div className="col-md-4">
-                          <label>Raw Material*</label>
+                        <div className="col-md-3">
+                          <label>Material*</label>
                           <select
                             className="form-select"
                             value={item.rawMaterial}
@@ -448,38 +488,59 @@ const Purchases = ({ onStatsUpdate }) => {
                               handleItemChange(index, "rawMaterial", e.target.value)
                             }
                           >
-                            <option value="">Select Material</option>
+                            <option value="">Select</option>
                             {rawMaterials.map((material) => (
                               <option key={material._id} value={material._id}>
-                                {material.name} ({material.unit})
+                                {material.name}
                               </option>
                             ))}
                           </select>
                         </div>
 
-                        <div className="col-md-2">
-                          <label>Quantity*</label>
+                        <div className="col-md-1">
+                          <label>Qty</label>
                           <input
                             type="number"
                             className="form-control"
                             value={item.quantity}
-                            min="1"
                             onChange={(e) =>
                               handleItemChange(index, "quantity", Number(e.target.value))
                             }
                           />
                         </div>
 
-                        <div className="col-md-3">
-                          <label>Price/Unit*</label>
+                        <div className="col-md-2">
+                          <label>Price</label>
                           <input
                             type="number"
                             className="form-control"
                             value={item.pricePerUnit}
-                            min="0"
-                            step="0.01"
                             onChange={(e) =>
                               handleItemChange(index, "pricePerUnit", Number(e.target.value))
+                            }
+                          />
+                        </div>
+
+                        <div className="col-md-1">
+                          <label>Tax %</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={item.taxPercent || 0}
+                            onChange={(e) =>
+                              handleItemChange(index, "taxPercent", Number(e.target.value))
+                            }
+                          />
+                        </div>
+
+                        <div className="col-md-1">
+                          <label>Discount</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={item.discount || 0}
+                            onChange={(e) =>
+                              handleItemChange(index, "discount", Number(e.target.value))
                             }
                           />
                         </div>
@@ -494,15 +555,13 @@ const Purchases = ({ onStatsUpdate }) => {
                         </div>
 
                         <div className="col-md-1 d-flex align-items-end">
-                          {formData.items.length > 1 && (
-                            <button
-                              type="button"
-                              className="btn btn-danger btn-sm w-100"
-                              onClick={() => handleRemoveItem(index)}
-                            >
-                              <FaTrash />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm w-100"
+                            onClick={() => handleRemoveItem(index)}
+                          >
+                            <FaTrash />
+                          </button>
                         </div>
 
                       </div>
@@ -510,10 +569,68 @@ const Purchases = ({ onStatsUpdate }) => {
                   </div>
                 ))}
 
-                {/* Total */}
-                <div className="text-end fw-bold">
-                  Total Amount: ₹{Number(formData.totalAmount || 0).toFixed(2)}
+                {/* Summary Section */}
+                <div className="card mt-4">
+                  <div className="card-body text-end">
+                    <div>Sub Total: ₹{formData.subTotal?.toFixed(2)}</div>
+                    <div>Total Tax: ₹{formData.totalTax?.toFixed(2)}</div>
+                    <div>Total Discount: ₹{formData.totalDiscount?.toFixed(2)}</div>
+                    <h5>Grand Total: ₹{formData.totalAmount?.toFixed(2)}</h5>
+                  </div>
                 </div>
+
+                {/* Payment Section */}
+                <div className="row mt-3">
+                  <div className="col-md-4">
+                    <label>Paid Amount</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={formData.paidAmount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, paidAmount: Number(e.target.value) })
+                      }
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label>Balance</label>
+                    <input
+                      className="form-control"
+                      value={`₹${formData.balanceAmount?.toFixed(2)}`}
+                      readOnly
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label>Payment Status</label>
+                    <select
+                      className="form-select"
+                      value={formData.paymentStatus}
+                      onChange={(e) =>
+                        setFormData({ ...formData, paymentStatus: e.target.value })
+                      }
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="partial">Partial</option>
+                      <option value="paid">Paid</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div className="mt-3">
+                  <label>Notes</label>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
+                  />
+                </div>
+
               </div>
 
               <div className="modal-footer">
@@ -549,7 +666,7 @@ const Purchases = ({ onStatsUpdate }) => {
           >
             <div className="modal-content">
               <div className="modal-header bg-dark text-white">
-                <h5 className="modal-title text-white" >Purchase Details</h5>
+                <h5 className="modal-title text-white">Purchase Details</h5>
                 <button
                   type="button"
                   className="btn-close btn-close-white"
@@ -582,7 +699,7 @@ const Purchases = ({ onStatsUpdate }) => {
                       return (
                         <tr key={index}>
                           <td>{material?.name || "N/A"}</td>
-                          <td>{item.quantity} {material?.unit}</td>
+                          <td>{item.quantity} {material?.purchaseUnit}</td>
                           <td>₹{Number(item.pricePerUnit || 0).toFixed(2)}</td>
                           <td>₹{Number(item.total || 0).toFixed(2)}</td>
                         </tr>
@@ -602,6 +719,6 @@ const Purchases = ({ onStatsUpdate }) => {
       )}
     </div>
   );
-}
+};
 
 export default Purchases;
